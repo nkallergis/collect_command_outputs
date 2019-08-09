@@ -1,0 +1,16 @@
+---
+- name: Gather commands' outputs from network devices (IOS, IOS-XE, NXOS)
+  hosts: all
+  connection: local
+  tasks:
+  - name: Prepare the ground
+    include_tasks: "tasks/10.prepare.yml"
+
+  - name: Get raw commands' output
+    include_tasks: "tasks/20.get_raw_outputs.yml"
+
+  - name: Create parsed output files
+    include_tasks: "tasks/30.create_parsed_outputs.{{parse_into}}.yml"
+
+  - name: Create a meaningful report with the collected data
+    include_tasks: "tasks/40.create_report.yml"

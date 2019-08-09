@@ -1,0 +1,18 @@
+commands:
+- show ip route
+- show ip route vrf all
+- show run
+- show ip interface brief
+- show ip bgp vpnv4 all
+- show ip bgp summary
+- show standby brief
+- show mpls ldp neighbor
+- show ip mroute
+- show ip multicast
+- show ip ospf database database-summary
+- show ip ospf neighbor
+- show ip route summary
+- show interfaces description
+- show spanning-tree summary
+- show spanning-tree
+- show vlan

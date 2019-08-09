@@ -1,0 +1,29 @@
+- name: Create parsed results' files (CSV) - Write keys on first row
+  loop: "{{parse_result.results}}"
+  loop_control:
+    label: "{{item.item}}"
+  when: (item.response | length) > 1 #TODO: Fix this properly
+  vars:
+    command: "{{item.item.split() | join('_')}}"
+    raw_or_parsed: "parsed"
+    filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+    filetype: "csv"
+  lineinfile:
+    create: True
+    insertbefore: BOF
+    line: "{{item.response[0].keys() | join(',')}}"
+    dest: "{{outputs_folder}}/{{filename}}.{{filetype}}"
+
+- name: Populate parsed results' files (CSV) - Write values on subsequent rows
+  loop: "{{parse_result.results | subelements('response')}}"
+  loop_control:
+    label: "{{item[0].item}}"
+  when: (item[0].response | length) > 1 #TODO: Fix this properly
+  vars:
+    command: "{{item[0].item.split() | join('_')}}"
+    raw_or_parsed: "parsed"
+    filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+    filetype: "csv"
+  lineinfile:
+    line: "{{item[1].values() | join(',')}}"
+    dest: "{{outputs_folder}}/{{filename}}.{{filetype}}"

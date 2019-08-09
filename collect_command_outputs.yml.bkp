@@ -1,0 +1,113 @@
+---
+- name: Gather commands' outputs from network devices (IOS, IOS-XE, NXOS)
+  hosts: all
+  connection: local
+  tasks:
+  - name: Get time
+    run_once: True
+    set_fact:
+      date: "{{lookup('pipe', 'date +%Y%m%d')}}"
+      time: "{{lookup('pipe', 'date +%H%M%S')}}"
+      # datetime: "{{date}}.{{time}}"
+
+  - name: Delete previous outputs
+    when: clear_previous
+    run_once: True
+    file:
+      path: "{{outputs_folder}}"
+      state: absent
+
+  - name: Create outputs folder
+    run_once: True
+    file:
+      path: "{{outputs_folder}}"
+      state: directory
+  
+  - name: Import list of commands
+    include_vars:
+      file: "commands.txt"
+
+  - name: Gather and parse raw outputs
+    loop: "{{commands}}"
+    vars:
+      command: "{{item.split() | join('_')}}"
+      raw_or_parsed: "raw"
+      filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+      filetype: "txt"
+    ntc_show_command:
+      template_dir: "/home/kallergisn/.ansible/plugins/modules/ntc_ansible/ntc-templates/templates"
+      index_file: "index"
+      connection: ssh
+      host: "{{ ansible_host }}"
+      username: "{{ ansible_user }}"
+      password: "{{ ansible_password }}"
+      platform: "{{ ntc_platform }}"
+      local_file: "{{outputs_folder}}/{{filename}}.{{filetype}}"
+      command: "{{item}}"
+    register: parse_result
+
+  - name: Create parsed results' files (YAML)
+    loop: "{{parse_result.results}}"
+    loop_control:
+      label: "{{item.item}}"
+    when:
+      - create_yaml
+      - (item.response | length) > 1 #TODO: Fix this properly
+    vars:
+      command: "{{item.item.split() | join('_')}}"
+      raw_or_parsed: "parsed"
+      filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+      filetype: "yml"
+    copy:
+      content: "{{item.response | to_nice_yaml(indent=2)}}"
+      dest: "{{outputs_folder}}/{{filename}}.{{filetype}}"
+
+  - name: Create parsed results' files (JSON)
+    loop: "{{parse_result.results}}"
+    loop_control:
+      label: "{{item.item}}"
+    when:
+      - create_json
+      - (item.response | length) > 1 #TODO: Fix this properly
+    vars:
+      command: "{{item.item.split() | join('_')}}"
+      raw_or_parsed: "parsed"
+      filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+      filetype: "json"
+    copy:
+      content: "{{item.response | to_nice_json(indent=2)}}"
+      dest: "{{outputs_folder}}/{{filename}}.{{filetype}}"
+
+  - name: Create parsed results' files (CSV) - Write keys on first row
+    loop: "{{parse_result.results}}"
+    loop_control:
+      label: "{{item.item}}"
+    when:
+      - create_csv
+      - (item.response | length) > 1 #TODO: Fix this properly
+    vars:
+      command: "{{item.item.split() | join('_')}}"
+      raw_or_parsed: "parsed"
+      filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+      filetype: "csv"
+    lineinfile:
+      create: True
+      insertbefore: BOF
+      line: "{{item.response[0].keys() | join(',')}}"
+      dest: "{{outputs_folder}}/{{filename}}.{{filetype}}"
+
+  - name: Populate parsed results' files (CSV) - Write values on subsequent rows
+    loop: "{{parse_result.results | subelements('response')}}"
+    loop_control:
+      label: "{{item[0].item}}"
+    when:
+      - create_csv
+      - (item[0].response | length) > 1
+    vars:
+      command: "{{item[0].item.split() | join('_')}}"
+      raw_or_parsed: "parsed"
+      filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+      filetype: "csv"
+    lineinfile:
+      line: "{{item[1].values() | join(',')}}"
+      dest: "{{outputs_folder}}/{{filename}}.{{filetype}}"

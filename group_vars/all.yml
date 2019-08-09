@@ -1,0 +1,8 @@
+# Define the folder where output files will be created in
+outputs_folder: "outputs"
+
+# If true, all previous output files are removed prior to collecting new ones
+clear_previous: False
+
+# Filetype of the parsed output files (csv, yaml, json)
+parse_into: csv

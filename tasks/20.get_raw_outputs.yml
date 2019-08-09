@@ -1,0 +1,18 @@
+- name: Gather and parse raw outputs
+  loop: "{{commands}}"
+  vars:
+    command: "{{item.split() | join('_')}}"
+    raw_or_parsed: "raw"
+    filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+    filetype: "txt"
+  ntc_show_command:
+    template_dir: "/home/kallergisn/.ansible/plugins/modules/ntc_ansible/ntc-templates/templates"
+    index_file: "index"
+    connection: ssh
+    host: "{{ ansible_host }}"
+    username: "{{ ansible_user }}"
+    password: "{{ ansible_password }}"
+    platform: "{{ ntc_platform }}"
+    local_file: "{{outputs_folder}}/{{filename}}.{{filetype}}"
+    command: "{{item}}"
+  register: parse_result

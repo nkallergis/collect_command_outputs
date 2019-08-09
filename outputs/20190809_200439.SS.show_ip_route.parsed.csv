@@ -1,0 +1,13 @@
+distance,uptime,protocol,network,metric,mask,nexthop_ip,nexthop_if,type
+1,,S,0.0.0.0,0,0,10.25.103.1,,
+,,S,10.10.0.0,,16,,Null0,
+110,09:39:15,O,10.10.1.1,20,32,10.10.10.1,Ethernet0/1,E2
+110,09:39:15,O,10.10.2.1,20,32,10.10.10.1,Ethernet0/1,E2
+,,C,10.10.3.1,,32,,Loopback3,
+,,C,10.10.4.1,,32,,Loopback4,
+,,C,10.10.10.0,,30,,Ethernet0/1,
+,,L,10.10.10.2,,32,,Ethernet0/1,
+,,C,10.10.10.4,,30,,Ethernet0/0,
+,,L,10.10.10.5,,32,,Ethernet0/0,
+,,C,10.25.103.0,,24,,Ethernet0/3,
+,,L,10.25.103.197,,32,,Ethernet0/3,

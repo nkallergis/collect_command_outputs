@@ -1,0 +1,5 @@
+status,intf,ipaddr,proto
+up,Ethernet0/0,10.10.10.6,up
+administratively down,Ethernet0/1,unassigned,down
+administratively down,Ethernet0/2,unassigned,down
+up,Ethernet0/3,10.25.103.198,up

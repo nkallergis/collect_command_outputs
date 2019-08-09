@@ -1,0 +1,13 @@
+- name: Create parsed results' files (JSON)
+  loop: "{{parse_result.results}}"
+  loop_control:
+    label: "{{item.item}}"
+  when: (item.response | length) > 1 #TODO: Fix this properly
+  vars:
+    command: "{{item.item.split() | join('_')}}"
+    raw_or_parsed: "parsed"
+    filename: "{{date}}_{{time}}.{{inventory_hostname}}.{{command}}.{{raw_or_parsed}}"
+    filetype: "json"
+  copy:
+    content: "{{item.response | to_nice_json(indent=2)}}"
+    dest: "{{outputs_folder}}/{{filename}}.{{filetype}}"

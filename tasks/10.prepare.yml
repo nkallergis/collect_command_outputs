@@ -1,0 +1,23 @@
+- name: Get time
+  run_once: True
+  set_fact:
+    date: "{{lookup('pipe', 'date +%Y%m%d')}}"
+    time: "{{lookup('pipe', 'date +%H%M%S')}}"
+    # datetime: "{{date}}.{{time}}"
+
+- name: Delete previous outputs
+  when: clear_previous
+  run_once: True
+  file:
+    path: "{{outputs_folder}}"
+    state: absent
+
+- name: Create outputs folder
+  run_once: True
+  file:
+    path: "{{outputs_folder}}"
+    state: directory
+
+- name: Import list of commands
+  include_vars:
+    file: "commands.txt"

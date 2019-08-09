@@ -1,0 +1,7 @@
+Interface                      Status         Protocol Description
+Et0/0                          up             up       
+Et0/1                          up             up       
+Et0/2                          admin down     down     
+Et0/3                          up             up       
+Lo3                            up             up       
+Lo4                            up             up       
