@@ -1,5 +1,5 @@
 # Collect command outputs (IOS, IOS-XE, NXOS)
-## Collect and parse command outputs from Cisco network devices
+# Collect and parse command outputs from Cisco network devices
 
 ## Usage tips
 - All configurable variables are stored in **group_vars/all.yml**. They can either be changed in-file or temporarily overriden with **--extra-vars**.
