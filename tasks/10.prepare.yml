@@ -20,4 +20,4 @@
 
 - name: Import list of commands
   include_vars:
-    file: "commands.txt"
+    file: "{{commands_file}}"

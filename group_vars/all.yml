@@ -6,3 +6,6 @@ clear_previous: False
 
 # Filetype of the parsed output files (csv, yaml, json)
 parse_into: csv
+
+# Define the file where the commands are stored into
+commands_file: "commands.txt"
